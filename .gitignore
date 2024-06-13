@@ -1,2 +1,5 @@
 .env
-tmp/academia-back.exe
+tmp/discord-bot.exe
+
+node_modules
+dist
