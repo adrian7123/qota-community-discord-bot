@@ -1,0 +1,9 @@
+name: qota_community
+
+services:
+  discord_bot:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./
+    volumes:
+      - ./:/app
