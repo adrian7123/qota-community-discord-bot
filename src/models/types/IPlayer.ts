@@ -1,6 +1,6 @@
 export type IPlayer = {
   name: string;
-  discordId: any[];
+  discordId: string;
   createdAt: Date;
   updatedAt: Date;
 };

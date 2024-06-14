@@ -13,7 +13,47 @@ export const lista = {
 
   execute(interaction: CommandInteraction) {
     return interaction.reply(
-      new MixHelper().makeMixListMessage(null, [null, null, null])
+      new MixHelper().makeMixListMessage(
+        {
+          date: new Date(),
+          players: [],
+          expired: false,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        [
+          {
+            name: '',
+            discordId: '496355712352518155',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          },
+          {
+            name: '',
+            discordId: '496355712352518155',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          },
+          {
+            name: '',
+            discordId: '496355712352518155',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          },
+          {
+            name: '',
+            discordId: '496355712352518155',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          },
+          {
+            name: '',
+            discordId: '496355712352518155',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+        ]
+      )
     );
   }
 };
