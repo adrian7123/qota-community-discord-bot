@@ -1,0 +1,15 @@
+FROM rust:latest
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    pkg-config \
+    libssl-dev \
+    build-essential
+
+WORKDIR /app
+
+COPY .cargo/ ./
+
+RUN cargo install cargo-watch
+
+CMD [ "cargo", "dev" ]

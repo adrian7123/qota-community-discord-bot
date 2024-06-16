@@ -1,6 +1,0 @@
-{
-  "execMap": {
-    "ts": "tsx"
-  },
-  "ext": "js, json, ts, proto, json, jsonl"
-}

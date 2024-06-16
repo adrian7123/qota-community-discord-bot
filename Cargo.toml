@@ -1,0 +1,31 @@
+[package]
+name = "levels-rank-api-rust"
+version = "0.1.0"
+default-run = "levels-rank-api-rust"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace]
+members = ["discord_bot"]
+resolver = "2"
+
+[dependencies]
+
+# my libs
+discord_bot = { path = "./discord_bot" }
+shared = { path = "./shared" }
+
+rocket = { version = "0.5.1", features = ["json"] }
+serde = "1.0.167"
+reqwest = { version = "0.12.4", features = ["blocking", "json"] }
+tokio = { version = "1.31.0" }
+dotenv = "0.15.0"
+serde_json = "1.0.100"
+serenity = "0.12.2"
+tabled = "0.15.0"
+chrono = "0.4.26"
+rand = "0.8.5"
+tokio-cron-scheduler = "0.10.2"
+uuid = "1.4.1"
+color-print = "0.3.4"
