@@ -563,6 +563,7 @@ dependencies = [
  "chrono",
  "color-print",
  "dotenv",
+ "mongodb 0.1.0",
  "rand",
  "reqwest 0.12.4",
  "serde",
@@ -1518,6 +1519,15 @@ dependencies = [
  "libc",
  "wasi",
  "windows-sys 0.48.0",
+]
+
+[[package]]
+name = "mongodb"
+version = "0.1.0"
+dependencies = [
+ "dotenv",
+ "futures",
+ "mongodb 2.8.2",
 ]
 
 [[package]]
@@ -2628,7 +2638,7 @@ dependencies = [
  "color-print",
  "dotenv",
  "futures",
- "mongodb",
+ "mongodb 2.8.2",
  "rand",
  "reqwest 0.12.4",
  "serde",
