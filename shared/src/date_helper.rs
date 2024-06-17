@@ -1,11 +1,11 @@
-use chrono::{DateTime, Datelike, Duration, FixedOffset, NaiveDate};
+use chrono::{DateTime, Datelike, Duration, NaiveDate, Utc};
 
 pub struct DateHelper;
 
 const MONTHS_IN_YEAR: u8 = 12;
 
 impl DateHelper {
-    pub fn increment_date(date: &DateTime<FixedOffset>, increment: u8) -> DateTime<FixedOffset> {
+    pub fn increment_date(date: &DateTime<Utc>, increment: u8) -> DateTime<Utc> {
         let mut new_date = date.clone();
         new_date += Duration::days(increment.into());
 

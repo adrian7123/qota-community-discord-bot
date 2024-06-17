@@ -61,7 +61,7 @@ async fn criarlista(ctx: &Context, msg: &Message) -> CommandResult {
 
     let bot_helper = BotHelper::new(ctx.clone());
 
-    let mix_helper: MixHelper = MixHelper::new(bot_helper.get_database().await).await;
+    let mix_helper = MixHelper::new(bot_helper.get_database().await).await;
 
     let msg_parsed: Vec<&str> = msg.content.trim().split(" ").collect();
 

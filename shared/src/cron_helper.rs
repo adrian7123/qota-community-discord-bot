@@ -2,6 +2,7 @@ use std::{future::Future, pin::Pin};
 
 use chrono::{Datelike, Duration, Timelike};
 use color_print::cprintln;
+use mongodb_client::MongoDBClient;
 use serenity::{
     model::prelude::Message,
     prelude::{Context, TypeMapKey},
@@ -23,7 +24,7 @@ pub struct CronHelper {
 }
 
 impl CronHelper {
-    pub fn date_to_schedule(date: chrono::DateTime<chrono::FixedOffset>) -> String {
+    pub fn date_to_schedule(date: chrono::DateTime<chrono::Utc>) -> String {
         let mut new_date = date + Duration::hours(3);
 
         new_date = new_date.with_day(date.day()).unwrap();
@@ -75,47 +76,50 @@ impl CronHelper {
     }
     pub async fn send_message_discord(
         &self,
-        current_date: chrono::DateTime<chrono::FixedOffset>,
+        current_date: chrono::DateTime<chrono::Utc>,
         ctx: Context,
         msg: Message,
         message_builder: &mut MessageBuilder,
-    ) -> Result<(Uuid, String), String> {
-        // let message = message_builder.build();
+    ) -> Result<String, String> {
+        let message = message_builder.build();
 
-        // let schedule: String = Self::date_to_schedule(current_date);
+        let schedule: String = Self::date_to_schedule(current_date);
 
-        // let job = Job::new_cron_job_async(schedule.as_str(), move |uuid, _lock| {
-        //     let http = ctx.http.clone();
-        //     let m = message.clone();
+        let data = ctx.data.read().await;
+        let mongodb = data.get::<MongoDBClient>().unwrap();
 
-        //     Box::pin(async move {
-        //         cprintln!(
-        //             "<yellow><bold>Cron</bold> send_message_discord at: {}</>",
-        //             chrono::Utc::now()
-        //         );
+        let job = Job::new_cron_job_async(schedule.as_str(), move |uuid, _lock| {
+            let http = ctx.http.clone();
+            let m = message.clone();
 
-        //         let _ = msg.channel_id.say(http.as_ref(), m).await;
+            Box::pin(async move {
+                cprintln!(
+                    "<yellow><bold>Cron</bold> send_message_discord at: {}</>",
+                    chrono::Utc::now()
+                );
 
-        //         // mix_helper::MixHelper::new()
-        //         //     .await
-        //         //     .update_mix_schedule(uuid.to_string(), vec![mix_schedule::executed::set(true)])
-        //         //     .await;
-        //     })
-        // });
+                let _ = msg.channel_id.say(http.as_ref(), m).await;
 
-        // match job {
-        //     Ok(job) => {
-        //         let uuid = self.cron.add(job).await;
+                mix_helper::MixHelper::new(mongodb.database)
+                    .await
+                    .update_mix_schedule(uuid.to_string(), vec![mix_schedule::executed::set(true)])
+                    .await;
+            })
+        });
 
-        //         match uuid {
-        //             Ok(uuid) => return Ok((uuid, schedule)),
-        //             Err(e) => return Err(format!("Cron not created: {:?}", e.to_string())),
-        //         }
-        //     }
-        //     Err(e) => return Err(format!("Job not created: {:?}", e.to_string())),
-        // }
+        match job {
+            Ok(job) => {
+                let uuid = self.cron.add(job).await;
 
-        Ok((Uuid::new_v4(), String::new()))
+                match uuid {
+                    Ok(uuid) => return Ok((uuid, schedule)),
+                    Err(e) => return Err(format!("Cron not created: {:?}", e.to_string())),
+                }
+            }
+            Err(e) => return Err(format!("Job not created: {:?}", e.to_string())),
+        }
+
+        Ok(String::new())
     }
     pub async fn cancel_all_cron_from_mix(&self, mix_id: String) {
         // let mix_helper = mix_helper::MixHelper::new().await;

@@ -1,14 +1,15 @@
-use ::serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 use mongodb::bson::oid::ObjectId;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Player {
+pub struct MixSchedule {
     #[serde(rename = "_id")]
     pub id: ObjectId,
-    pub name: String,
-    pub discord_id: String,
-    pub mix_id: Option<String>,
+    pub uuid: String,
+    pub schedule: String,
+    pub executed: bool,
+    pub mix: ObjectId,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }

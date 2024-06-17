@@ -2536,6 +2536,7 @@ dependencies = [
  "dotenv",
  "futures",
  "mongodb",
+ "mongodb_client",
  "rand",
  "reqwest 0.12.4",
  "serde",

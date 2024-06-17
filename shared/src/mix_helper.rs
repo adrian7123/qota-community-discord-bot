@@ -1,5 +1,4 @@
-use chrono::{DateTime, FixedOffset, Timelike, Utc};
-use futures::StreamExt;
+use chrono::{DateTime, Timelike, Utc};
 use mongodb::{
     bson::{doc, oid::ObjectId},
     options::FindOneOptions,
@@ -7,11 +6,12 @@ use mongodb::{
 };
 use serenity::utils::MessageBuilder;
 
-use crate::models::{mix::Mix, player::Player};
+use crate::models::{mix::Mix, mix_schedule::MixSchedule, player::Player};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct MixHelper {
-    col: Collection<Mix>,
+    mix: Collection<Mix>,
+    schedule: Collection<MixSchedule>,
 }
 
 impl MixHelper {
@@ -84,24 +84,27 @@ impl MixHelper {
             created_at: Utc::now(),
             updated_at: Utc::now(),
             expired: false,
+            cron: vec![],
+            players: vec![],
         };
 
-        self.col.insert_one(&mix, None).await.expect("asd");
+        self.mix.insert_one(&mix, None).await.expect("asd");
 
         mix
     }
-    /// Save cronjob of mix
-    pub async fn create_mix_schedule(&self, mix_id: String, uuid: String, schedule: String) {
-        // self.db
-        //     .mix_schedule()
-        //     .create(
-        //         uuid,
-        //         mix::UniqueWhereParam::IdEquals(mix_id),
-        //         vec![mix_schedule::schedule::set(schedule)],
-        //     )
-        //     .exec()
-        //     .await
-        //     .unwrap();
+    pub async fn create_mix_schedule(&self, mix: ObjectId, schedule: String) -> MixSchedule {
+        let schedule = MixSchedule {
+            id: ObjectId::new(),
+            mix,
+            schedule,
+            executed: false,
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
+        };
+
+        self.schedule.insert_one(schedule, None).await.expect("asd");
+
+        schedule
     }
     /// Update cronjob of mix
     pub async fn update_mix_schedule(&self, uuid: String, params: Vec<String>) {

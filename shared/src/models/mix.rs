@@ -1,13 +1,17 @@
-use ::serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 use mongodb::bson::oid::ObjectId;
+use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+use super::{mix_schedule::MixSchedule, player::Player};
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Mix {
     #[serde(rename = "_id")]
     pub id: ObjectId,
     pub date: DateTime<Utc>,
+    pub expired: bool,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
-    pub expired: bool,
+    pub cron: Vec<MixSchedule>,
+    pub players: Vec<Player>,
 }
