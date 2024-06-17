@@ -9,6 +9,7 @@ edition = "2021"
 [dependencies]
 
 mongodb_client = { path = "../mongodb_client" }
+my_macro = { path = "../my_macro" }
 
 
 serde = "1.0.167"

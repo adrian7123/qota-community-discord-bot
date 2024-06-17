@@ -1528,6 +1528,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "my_macro"
+version = "0.1.0"
+dependencies = [
+ "futures",
+ "mongodb",
+ "mongodb_client",
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
+
+[[package]]
 name = "native-tls"
 version = "0.2.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2537,6 +2549,7 @@ dependencies = [
  "futures",
  "mongodb",
  "mongodb_client",
+ "my_macro",
  "rand",
  "reqwest 0.12.4",
  "serde",

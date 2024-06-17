@@ -1,6 +1,7 @@
 use chrono::{DateTime, Timelike, Utc};
+use futures::{StreamExt, TryStreamExt};
 use mongodb::{
-    bson::{doc, oid::ObjectId},
+    bson::{doc, oid::ObjectId, Uuid},
     options::FindOneOptions,
     Collection, Database,
 };
@@ -17,7 +18,8 @@ pub struct MixHelper {
 impl MixHelper {
     pub async fn new(db: Database) -> Self {
         Self {
-            col: db.collection("mix"),
+            mix: db.collection("mix"),
+            schedule: db.collection("mix_schedule"),
         }
     }
     pub fn make_message_mix_list(&self, mix: Mix, players: Vec<Player>) -> MessageBuilder {
@@ -92,9 +94,15 @@ impl MixHelper {
 
         mix
     }
-    pub async fn create_mix_schedule(&self, mix: ObjectId, schedule: String) -> MixSchedule {
+    pub async fn create_mix_schedule(
+        &self,
+        uuid: Uuid,
+        mix: ObjectId,
+        schedule: String,
+    ) -> MixSchedule {
         let schedule = MixSchedule {
             id: ObjectId::new(),
+            uuid: uuid.to_string(),
             mix,
             schedule,
             executed: false,
@@ -102,7 +110,7 @@ impl MixHelper {
             updated_at: Utc::now(),
         };
 
-        self.schedule.insert_one(schedule, None).await.expect("asd");
+        // self.schedule.insert_one(schedule, None).await.expect("asd");
 
         schedule
     }
@@ -127,7 +135,7 @@ impl MixHelper {
     pub async fn get_mix_many(&self) -> mongodb::error::Result<Vec<Mix>> {
         let mut mixes: Vec<Mix> = vec![];
 
-        let mut cursor = self.col.find(None, None).await?;
+        let mut cursor = self.mix.find(None, None).await?;
 
         while let Some(result) = cursor.next().await {
             match result {
@@ -144,7 +152,7 @@ impl MixHelper {
         Ok(mixes)
     }
     pub async fn get_current_mix(&self) -> Option<Mix> {
-        self.col
+        self.mix
             .find_one(
                 None,
                 FindOneOptions::builder()

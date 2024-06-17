@@ -80,46 +80,46 @@ impl CronHelper {
         ctx: Context,
         msg: Message,
         message_builder: &mut MessageBuilder,
-    ) -> Result<String, String> {
-        let message = message_builder.build();
+    ) -> Result<(Uuid, String), String> {
+        // let message = message_builder.build();
 
-        let schedule: String = Self::date_to_schedule(current_date);
+        // let schedule: String = Self::date_to_schedule(current_date);
 
-        let data = ctx.data.read().await;
-        let mongodb = data.get::<MongoDBClient>().unwrap();
+        // let data = ctx.data.read().await;
+        // let mongodb = data.get::<MongoDBClient>().unwrap();
 
-        let job = Job::new_cron_job_async(schedule.as_str(), move |uuid, _lock| {
-            let http = ctx.http.clone();
-            let m = message.clone();
+        // let job = Job::new_cron_job_async(schedule.as_str(), move |uuid, _lock| {
+        //     let http = ctx.http.clone();
+        //     let m = message.clone();
 
-            Box::pin(async move {
-                cprintln!(
-                    "<yellow><bold>Cron</bold> send_message_discord at: {}</>",
-                    chrono::Utc::now()
-                );
+        //     Box::pin(async move {
+        //         cprintln!(
+        //             "<yellow><bold>Cron</bold> send_message_discord at: {}</>",
+        //             chrono::Utc::now()
+        //         );
 
-                let _ = msg.channel_id.say(http.as_ref(), m).await;
+        //         let _ = msg.channel_id.say(http.as_ref(), m).await;
 
-                mix_helper::MixHelper::new(mongodb.database)
-                    .await
-                    .update_mix_schedule(uuid.to_string(), vec![mix_schedule::executed::set(true)])
-                    .await;
-            })
-        });
+        //         mix_helper::MixHelper::new(mongodb.database)
+        //             .await
+        //             .update_mix_schedule(uuid.to_string(), vec![mix_schedule::executed::set(true)])
+        //             .await;
+        //     })
+        // });
 
-        match job {
-            Ok(job) => {
-                let uuid = self.cron.add(job).await;
+        // match job {
+        //     Ok(job) => {
+        //         let uuid = self.cron.add(job).await;
 
-                match uuid {
-                    Ok(uuid) => return Ok((uuid, schedule)),
-                    Err(e) => return Err(format!("Cron not created: {:?}", e.to_string())),
-                }
-            }
-            Err(e) => return Err(format!("Job not created: {:?}", e.to_string())),
-        }
+        //         match uuid {
+        //             Ok(uuid) => return Ok((uuid, schedule)),
+        //             Err(e) => return Err(format!("Cron not created: {:?}", e.to_string())),
+        //         }
+        //     }
+        //     Err(e) => return Err(format!("Job not created: {:?}", e.to_string())),
+        // }
 
-        Ok(String::new())
+        Ok((Uuid::new_v4(), String::new()))
     }
     pub async fn cancel_all_cron_from_mix(&self, mix_id: String) {
         // let mix_helper = mix_helper::MixHelper::new().await;

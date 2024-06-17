@@ -7,7 +7,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["discord_bot"]
+members = ["discord_bot", "my_macro"]
 resolver = "2"
 
 [dependencies]
