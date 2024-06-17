@@ -48,7 +48,7 @@ impl CronHelper {
     }
     pub async fn add<T>(
         &self,
-        current_date: chrono::DateTime<chrono::FixedOffset>,
+        current_date: chrono::DateTime<chrono::Utc>,
         run: T,
     ) -> Result<(Uuid, String), String>
     where

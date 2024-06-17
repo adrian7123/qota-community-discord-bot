@@ -2,12 +2,13 @@ pub mod bot_helper;
 mod commands;
 mod commands_adm;
 mod tables;
+use mongodb_client::MongoDBClient;
 
 use color_print::cprintln;
 use serenity::framework::standard::StandardFramework;
 use serenity::model::channel::Message;
 use serenity::model::prelude::Ready;
-use serenity::prelude::{Context, EventHandler, GatewayIntents};
+use serenity::prelude::{Context, EventHandler, GatewayIntents, TypeMapKey};
 use serenity::{async_trait, Client};
 use shared::cron_helper::Cron;
 use tokio_cron_scheduler::JobScheduler;
@@ -43,6 +44,9 @@ pub async fn serenity_instance(token: String) -> Client {
 
     {
         let mut data = client.data.write().await;
+        let mongodb_client = MongoDBClient::new().await.expect("");
+
+        data.insert::<MongoDBClient>(mongodb_client);
         data.insert::<Cron>(cron);
     }
 

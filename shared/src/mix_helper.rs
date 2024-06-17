@@ -39,7 +39,7 @@ impl MixHelper {
 
         message
     }
-    pub fn get_current_date(&self, hour: Option<u32>, min: Option<u32>) -> DateTime<FixedOffset> {
+    pub fn get_current_date(&self, hour: Option<u32>, min: Option<u32>) -> DateTime<Utc> {
         let mut h: u32 = 0;
         let mut m: u32 = 0;
 
@@ -59,7 +59,6 @@ impl MixHelper {
             .unwrap()
             .with_nanosecond(0)
             .unwrap()
-            .fixed_offset()
     }
     pub async fn mix_is_created(&self) -> (bool, MessageBuilder) {
         let mixes = self.get_mix_many().await.expect("msg");
@@ -78,17 +77,18 @@ impl MixHelper {
         }
         (created, message)
     }
-    pub async fn create_mix(&self, current_date: DateTime<Utc>) {
-        self.col.insert_one(
-            Mix {
-                id: ObjectId::new(),
-                date: current_date,
-                created_at: Utc::now(),
-                updated_at: Utc::now(),
-                expired: false,
-            },
-            None,
-        );
+    pub async fn create_mix(&self, current_date: DateTime<Utc>) -> Mix {
+        let mix = Mix {
+            id: ObjectId::new(),
+            date: current_date,
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
+            expired: false,
+        };
+
+        self.col.insert_one(&mix, None).await.expect("asd");
+
+        mix
     }
     /// Save cronjob of mix
     pub async fn create_mix_schedule(&self, mix_id: String, uuid: String, schedule: String) {
@@ -181,7 +181,7 @@ impl MixHelper {
         //     .await
         //     .unwrap()
     }
-    pub async fn cancel_current_mix(&self, mix_id: String) {
+    pub async fn cancel_current_mix(&self, mix_id: ObjectId) {
         // let _ = self
         //     .db
         //     .mix()

@@ -54,7 +54,7 @@ async fn flip(ctx: &Context, msg: &Message) -> CommandResult {
 
 #[command]
 async fn lista(ctx: &Context, msg: &Message) -> CommandResult {
-    let mix_helper = MixHelper::new().await;
+    let mix_helper: MixHelper = MixHelper::new(bot_helper.get_database().await).await;
 
     let current_mix = mix_helper.get_current_mix().await;
 
@@ -89,7 +89,7 @@ async fn comandos(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 async fn sair(ctx: &Context, msg: &Message) -> CommandResult {
     let bot_helper = BotHelper::new(ctx.clone());
-    let mix_helper = MixHelper::new().await;
+    let mix_helper: MixHelper = MixHelper::new(bot_helper.get_database().await).await;
 
     let current_mix = mix_helper.get_current_mix().await;
 
@@ -166,7 +166,7 @@ async fn sair(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 async fn entrar(ctx: &Context, msg: &Message) -> CommandResult {
     let bot_helper = BotHelper::new(ctx.clone());
-    let mix_helper = MixHelper::new().await;
+    let mix_helper: MixHelper = MixHelper::new(bot_helper.get_database().await).await;
 
     let current_mix = mix_helper.get_current_mix().await;
 

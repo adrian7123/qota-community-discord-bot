@@ -1,40 +1,46 @@
+use mongodb::Database;
+use mongodb_client::MongoDBClient;
 use serenity::{
+    client::Context,
     http::{CacheHttp, Http},
     model::prelude::{ChannelId, Guild, GuildId, Member, Message, RoleId, UserId},
     prelude::SerenityError,
     utils::MessageBuilder,
 };
-
 pub struct BotHelper {
-    cache_http: Box<dyn CacheHttp>,
+    ctx: Box<Context>,
 }
 
 #[allow(dead_code)]
 impl BotHelper {
-    pub fn new(cache_http: impl CacheHttp + 'static) -> Self {
-        Self {
-            cache_http: Box::new(cache_http),
-        }
+    pub fn new(ctx: Context) -> Self {
+        Self { ctx: Box::new(ctx) }
+    }
+    pub async fn get_database(&self) -> Database {
+        let data = self.ctx.data.read().await;
+        let mongodb = data.get::<MongoDBClient>().unwrap();
+
+        mongodb.database.clone()
     }
     pub async fn add_member_role(&self, guild_id: GuildId, user_id: UserId, role_id: String) {
         let _ = guild_id
-            .member(self.cache_http.http(), user_id)
+            .member(self.ctx.http(), user_id)
             .await
             .expect("Error add_member_role")
             .add_role(
-                self.cache_http.http(),
-                RoleId::new(role_id.parse::<u64>().expect("err")),
+                self.ctx.http(),
+                RoleId(role_id.parse::<u64>().expect("err")),
             )
             .await;
     }
     pub async fn remove_member_role(&self, guild_id: GuildId, user_id: UserId, role_id: String) {
         let _ = guild_id
-            .member(self.cache_http.http(), user_id)
+            .member(self.ctx.http(), user_id)
             .await
             .expect("Error remove_member_role")
             .remove_role(
-                self.cache_http.http(),
-                RoleId::new(role_id.parse::<u64>().expect("err")),
+                self.ctx.http(),
+                RoleId(role_id.parse::<u64>().expect("err")),
             )
             .await;
     }
@@ -76,7 +82,7 @@ impl BotHelper {
             members.push(
                 guild_id
                     .member(
-                        self.cache_http.http(),
+                        self.ctx.http(),
                         UserId::from(id.parse::<u64>().expect("id.parse() err")),
                     )
                     .await
@@ -88,12 +94,9 @@ impl BotHelper {
     pub async fn get_member(
         &self,
         guild_id: GuildId,
-        cache_http: impl CacheHttp,
+        ctx: impl CacheHttp,
         user_id: impl Into<UserId>,
     ) -> Member {
-        guild_id
-            .member(cache_http, user_id)
-            .await
-            .expect("err get_member")
+        guild_id.member(ctx, user_id).await.expect("err get_member")
     }
 }

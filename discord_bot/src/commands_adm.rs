@@ -59,7 +59,9 @@ async fn criarlista(ctx: &Context, msg: &Message) -> CommandResult {
     let mut hour: u32 = 21;
     let mut min: u32 = 30;
 
-    let mix_helper: MixHelper = MixHelper::new().await;
+    let bot_helper = BotHelper::new(ctx.clone());
+
+    let mix_helper: MixHelper = MixHelper::new(bot_helper.get_database().await).await;
 
     let msg_parsed: Vec<&str> = msg.content.trim().split(" ").collect();
 
@@ -89,7 +91,7 @@ async fn criarlista(ctx: &Context, msg: &Message) -> CommandResult {
 
     let current_date = mix_helper.get_current_date(Some(hour), Some(min));
 
-    let current_mix = mix_helper.create_mix(Some(current_date)).await;
+    let current_mix = mix_helper.create_mix(current_date).await;
 
     let cron_helper = CronHelper::new_by_discord(ctx).await;
 
@@ -130,7 +132,7 @@ async fn criarlista(ctx: &Context, msg: &Message) -> CommandResult {
                     let id = mix_id.clone();
 
                     Box::pin(async move {
-                        MixHelper::new().await.cancel_current_mix(id).await;
+                        mix_helper.clone().cancel_current_mix(id).await;
                     })
                 })
                 .await
@@ -177,7 +179,8 @@ async fn criarlista(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 async fn sortearlista(ctx: &Context, msg: &Message) -> CommandResult {
     let bot_helper = BotHelper::new(ctx.clone());
-    let mix_helper = MixHelper::new().await;
+
+    let mix_helper = MixHelper::new(bot_helper.get_database().await).await;
 
     let current_mix = mix_helper.get_current_mix().await;
 
@@ -255,8 +258,8 @@ async fn sortearlista(ctx: &Context, msg: &Message) -> CommandResult {
 
 #[command]
 async fn adicionar(ctx: &Context, msg: &Message) -> CommandResult {
-    let mix_helper = MixHelper::new().await;
     let bot_helper = BotHelper::new(ctx.clone());
+    let mix_helper: MixHelper = MixHelper::new(bot_helper.get_database().await).await;
 
     let (created, message) = mix_helper.mix_is_created().await;
 
@@ -358,7 +361,8 @@ async fn adicionar(ctx: &Context, msg: &Message) -> CommandResult {
 
 #[command]
 async fn remover(ctx: &Context, msg: &Message) -> CommandResult {
-    let mix_helper = MixHelper::new().await;
+    let mix_helper: MixHelper = MixHelper::new(bot_helper.get_database().await).await;
+
     let bot_helper = BotHelper::new(ctx.clone());
 
     let (created, message) = mix_helper.mix_is_created().await;
@@ -439,7 +443,7 @@ async fn remover(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 async fn limparlista(ctx: &Context, msg: &Message) -> CommandResult {
     let bot_helper = BotHelper::new(ctx.clone());
-    let mix_helper = MixHelper::new().await;
+    let mix_helper: MixHelper = MixHelper::new(bot_helper.get_database().await).await;
 
     let mut cron = JobScheduler::new().await.expect("JobScheduler::new()");
 
@@ -502,7 +506,8 @@ async fn limparlista(ctx: &Context, msg: &Message) -> CommandResult {
 
 #[command]
 async fn cancelarlista(ctx: &Context, msg: &Message) -> CommandResult {
-    let mix_helper = MixHelper::new().await;
+    let mix_helper: MixHelper = MixHelper::new(bot_helper.get_database().await).await;
+
     let bot_helper = BotHelper::new(ctx.clone());
     let cron_helper = CronHelper::new_by_discord(ctx).await;
 
