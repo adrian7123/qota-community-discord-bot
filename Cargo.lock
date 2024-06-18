@@ -1282,27 +1282,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
-name = "levels-rank-api-rust"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "color-print",
- "discord_bot",
- "dotenv",
- "rand",
- "reqwest 0.12.4",
- "rocket",
- "serde",
- "serde_json",
- "serenity",
- "shared",
- "tabled",
- "tokio",
- "tokio-cron-scheduler",
- "uuid",
-]
-
-[[package]]
 name = "levenshtein"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1525,18 +1504,6 @@ dependencies = [
  "tokio",
  "tokio-util",
  "version_check",
-]
-
-[[package]]
-name = "my_macro"
-version = "0.1.0"
-dependencies = [
- "futures",
- "mongodb",
- "mongodb_client",
- "proc-macro2",
- "quote",
- "syn 1.0.109",
 ]
 
 [[package]]
@@ -1852,6 +1819,27 @@ dependencies = [
  "syn 2.0.66",
  "version_check",
  "yansi",
+]
+
+[[package]]
+name = "qota-community"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "color-print",
+ "discord_bot",
+ "dotenv",
+ "rand",
+ "reqwest 0.12.4",
+ "rocket",
+ "serde",
+ "serde_json",
+ "serenity",
+ "shared",
+ "tabled",
+ "tokio",
+ "tokio-cron-scheduler",
+ "uuid",
 ]
 
 [[package]]
@@ -2549,7 +2537,6 @@ dependencies = [
  "futures",
  "mongodb",
  "mongodb_client",
- "my_macro",
  "rand",
  "reqwest 0.12.4",
  "serde",

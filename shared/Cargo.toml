@@ -9,15 +9,13 @@ edition = "2021"
 [dependencies]
 
 mongodb_client = { path = "../mongodb_client" }
-my_macro = { path = "../my_macro" }
-
 
 serde = "1.0.167"
 reqwest = { version = "0.12.2", features = ["blocking", "json"] }
 tokio = { version = "1.31.0" }
 dotenv = "0.15.0"
 serde_json = "1.0.100"
-serenity = "0.11.0"
+serenity = "0.11.6"
 tabled = "0.15.0"
 chrono = "0.4.26"
 rand = "0.8.5"

@@ -1,3 +1,7 @@
+use rocket::Route;
+
+use crate::Ctx;
+
 pub fn routes() -> Vec<Route> {
     routes![get_players]
 }

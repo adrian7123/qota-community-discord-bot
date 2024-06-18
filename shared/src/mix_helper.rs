@@ -1,11 +1,12 @@
 use chrono::{DateTime, Timelike, Utc};
-use futures::{StreamExt, TryStreamExt};
+use futures::StreamExt;
 use mongodb::{
-    bson::{doc, oid::ObjectId, Uuid},
+    bson::{doc, oid::ObjectId},
     options::FindOneOptions,
     Collection, Database,
 };
 use serenity::utils::MessageBuilder;
+use uuid::Uuid;
 
 use crate::models::{mix::Mix, mix_schedule::MixSchedule, player::Player};
 
@@ -13,13 +14,15 @@ use crate::models::{mix::Mix, mix_schedule::MixSchedule, player::Player};
 pub struct MixHelper {
     mix: Collection<Mix>,
     schedule: Collection<MixSchedule>,
+    player: Collection<Player>,
 }
 
 impl MixHelper {
     pub async fn new(db: Database) -> Self {
         Self {
             mix: db.collection("mix"),
-            schedule: db.collection("mix_schedule"),
+            schedule: db.collection("mix_schedules"),
+            player: db.collection("players"),
         }
     }
     pub fn make_message_mix_list(&self, mix: Mix, players: Vec<Player>) -> MessageBuilder {
@@ -96,8 +99,8 @@ impl MixHelper {
     }
     pub async fn create_mix_schedule(
         &self,
-        uuid: Uuid,
         mix: ObjectId,
+        uuid: Uuid,
         schedule: String,
     ) -> MixSchedule {
         let schedule = MixSchedule {
@@ -110,7 +113,10 @@ impl MixHelper {
             updated_at: Utc::now(),
         };
 
-        // self.schedule.insert_one(schedule, None).await.expect("asd");
+        self.schedule
+            .insert_one(&schedule, None)
+            .await
+            .expect("asd");
 
         schedule
     }
@@ -135,7 +141,15 @@ impl MixHelper {
     pub async fn get_mix_many(&self) -> mongodb::error::Result<Vec<Mix>> {
         let mut mixes: Vec<Mix> = vec![];
 
-        let mut cursor = self.mix.find(None, None).await?;
+        let mut cursor = self
+            .mix
+            .find(
+                doc! {
+                    "expired": false
+                },
+                None,
+            )
+            .await?;
 
         while let Some(result) = cursor.next().await {
             match result {
@@ -162,14 +176,25 @@ impl MixHelper {
             .await
             .expect("erro")
     }
-    pub async fn get_mix_players(&self, mix_id: String) {
-        // self.db
-        //     .mix_player()
-        //     .find_many(vec![mix_player::mix_id::equals(Some(mix_id))])
-        //     .order_by(mix_player::created_at::order(Direction::Asc))
-        //     .exec()
+    pub async fn get_mix_players(&self, mix_id: ObjectId) -> Vec<Player> {
+        // self.mix
+        //     .aggregate(
+        //         vec![
+        //             doc! {
+        //                 "$match": doc! {
+        //                     "name": doc! {
+        //                         "$in": [
+        //                             "asd"
+        //                         ]
+        //                     }
+        //                 }
+        //             }
+        //         ]
+        //         None,
+        //     )
         //     .await
-        //     .unwrap()
+
+        vec![]
     }
     pub async fn create_mix_player(
         &self,

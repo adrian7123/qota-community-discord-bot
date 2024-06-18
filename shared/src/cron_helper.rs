@@ -1,8 +1,6 @@
 use std::{future::Future, pin::Pin};
 
 use chrono::{Datelike, Duration, Timelike};
-use color_print::cprintln;
-use mongodb_client::MongoDBClient;
 use serenity::{
     model::prelude::Message,
     prelude::{Context, TypeMapKey},
@@ -10,8 +8,6 @@ use serenity::{
 };
 use tokio_cron_scheduler::{Job, JobScheduler};
 use uuid::Uuid;
-
-use crate::mix_helper;
 
 pub struct Cron;
 

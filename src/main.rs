@@ -4,7 +4,7 @@ extern crate rocket;
 mod controllers;
 mod models;
 
-use std::{env, sync::Arc};
+use std::{env, thread, time::Duration};
 
 use controllers::players;
 use dotenv::dotenv;
@@ -17,7 +17,6 @@ mod cors;
 pub type Ctx = rocket::State<RocketContext>;
 
 pub struct RocketContext {
-    pub db: Arc<db::PrismaClient>,
     pub discord_client: Client,
 }
 
@@ -32,23 +31,12 @@ async fn rocket() -> _ {
 
     let token: String = env::var("DISCORD_TOKEN").expect("token");
 
-    // ? start discord bot 2
+    // ? start discord bot
     tokio::spawn(discord_bot::serenity_start(token.clone()));
-
-    let db = Arc::new(
-        db::new_client()
-            .await
-            .expect("Failed to create Prisma client"),
-    );
-
-    // teste
-    #[cfg(debug_assert)]
-    db._db_push(false).await.unwrap();
 
     rocket::build()
         .attach(cors::CORS)
         .manage(RocketContext {
-            db,
             discord_client: discord_bot::serenity_instance(token).await,
         })
         .register("/", catchers![default])
